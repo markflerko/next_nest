@@ -10,8 +10,9 @@ import { FileService, FileType } from 'src/file/file.service';
 @Injectable()
 export class TrackService {
   constructor(
-    @InjectModel(Track.name) private trackModel: Model<TrackDocument>,
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(Track.name) private readonly trackModel: Model<TrackDocument>,
+    @InjectModel(Comment.name)
+    private readonly commentModel: Model<CommentDocument>,
     private readonly fileService: FileService,
   ) {}
 
@@ -33,25 +34,38 @@ export class TrackService {
   }
 
   async delete(id: ObjectId): Promise<ObjectId> {
-    const track = await this.trackModel.findByIdAndDelete(id);
+    const track = await this.trackModel.findByIdAndDelete(id).exec();
     return track._id;
   }
 
   async getOne(id: ObjectId): Promise<Track> {
-    const track = await this.trackModel.findById(id).populate('comments');
+    const track = await this.trackModel
+      .findById(id)
+      .populate('comments')
+      .exec();
     return track;
   }
 
-  async getAll(): Promise<Track[]> {
-    const tracks = await this.trackModel.find();
+  async getAll(limit: number, offset: number): Promise<Track[]> {
+    const tracks = await this.trackModel
+      .find()
+      .skip(offset)
+      .limit(limit)
+      .exec();
     return tracks;
   }
 
   async addCommentDto(dto: CreateCommentDto) {
-    const track = await this.trackModel.findById(dto.trackId);
+    const track = await this.trackModel.findById(dto.trackId).exec();
     const comment = await this.commentModel.create(dto);
     track.comments.push(comment._id);
     await track.save();
     return comment;
+  }
+
+  async listen(id: ObjectId) {
+    const track = await this.trackModel.findById(id).exec();
+    track.listens += 1;
+    track.save();
   }
 }

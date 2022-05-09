@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as uuid from 'uuid';
+import { fsExistPromise } from 'src/utils/fsExistPromise';
 
 export enum FileType {
   AUDIO = 'audio',
@@ -16,7 +17,9 @@ export class FileService {
       const fileName = `${uuid.v4()}.${fileExtention}`;
       const filePath = path.resolve(__dirname, '..', 'static', type);
 
-      if (!fs.existsSync(filePath)) {
+      const isPathExist = await fsExistPromise(filePath);
+
+      if (!isPathExist) {
         await fs.promises.mkdir(filePath, { recursive: true });
       }
 

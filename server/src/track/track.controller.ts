@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,8 +27,6 @@ export class TrackController {
     ]),
   )
   create(@UploadedFiles() files, @Body() dto: CreateTrackDto) {
-    console.log(files);
-
     return this.trackService.create(dto, files.picture[0], files.audio[0]);
   }
 
@@ -42,12 +41,17 @@ export class TrackController {
   }
 
   @Get()
-  getAll() {
-    return this.trackService.getAll();
+  getAll(@Query('limit') limit: number, @Query('offset') offset: number) {
+    return this.trackService.getAll(limit, offset);
   }
 
   @Post('comment')
   createComment(@Body() dto: CreateCommentDto) {
     return this.trackService.addCommentDto(dto);
+  }
+
+  @Post('listen/:id')
+  listen(@Param('id') id: ObjectId) {
+    return this.trackService.listen(id);
   }
 }
