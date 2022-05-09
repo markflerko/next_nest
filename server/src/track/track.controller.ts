@@ -35,6 +35,12 @@ export class TrackController {
     return this.trackService.delete(id);
   }
 
+  @Get('search')
+  search(@Query('query') query: string) {
+    console.log(query);
+    return this.trackService.search(query);
+  }
+
   @Get(':id')
   getOne(@Param('id') id: ObjectId) {
     return this.trackService.getOne(id);
