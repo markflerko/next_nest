@@ -6,6 +6,8 @@ import MainLayout from "../../layouts/MainLayout";
 
 const Create = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const [audio, setAudio] = useState(null);
+  const [picture, setPicture] = useState(null);
 
   const next = () => {
     if (activeStep !== 2) {
@@ -24,17 +26,14 @@ const Create = () => {
           <TextField style={{ marginTop: 10 }} label={"Название трека"} />
         )}
         {activeStep === 1 && (
-          <FileUpload file={""} setFile={() => {}} accept={"image/*"}>
+          <FileUpload setFile={setPicture} accept={"image/*"}>
             <Button>Загрузить изображение</Button>
           </FileUpload>
         )}
         {activeStep === 2 && (
-          <TextField
-            style={{ marginTop: 10 }}
-            label={"Слова к треку"}
-            multiline
-            rows={3}
-          />
+          <FileUpload setFile={setAudio} accept={"audio/*"}>
+            <Button>Загрузить аудио</Button>
+          </FileUpload>
         )}
       </StepWrapper>
       <Grid container justifyContent={"space-between"}>
